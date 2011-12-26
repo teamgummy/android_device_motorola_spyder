@@ -204,11 +204,11 @@ PRODUCT_COPY_FILES += \
     device/motorola/spyder/prebuilt/usr/idc/cpcap-key.idc:system/usr/idc/cpcap-key.idc \
     device/motorola/spyder/prebuilt/usr/idc/light-prox.idc:system/usr/idc/light-prox.idc \
     device/motorola/spyder/prebuilt/usr/idc/omap-keypad.idc:system/usr/idc/omap-keypad.idc \
-    device/motorola/spyder/prebuilt/usr/idc/TOUCHIC-touchscreen.idc:system/usr/idc/TOUCH_IC.idc \
+    device/motorola/spyder/prebuilt/usr/idc/touch_ic.idc:system/usr/idc/touch_ic.idc \
     device/motorola/spyder/prebuilt/usr/keychars/cpcap-key.kcm:system/usr/keychars/cpcap-key.kcm \
     device/motorola/spyder/prebuilt/usr/keychars/light-prox.kcm:system/usr/keychars/light-prox.kcm \
     device/motorola/spyder/prebuilt/usr/keychars/omap-keypad.kcm:system/usr/keychars/omap-keypad.kcm \
-    device/motorola/spyder/prebuilt/usr/keychars/qtouch-touchscreen.kcm:system/usr/keychars/TOUCH_IC.kcm \
+    device/motorola/spyder/prebuilt/usr/keychars/touch_ic.kcm:system/usr/keychars/touch_ic.kcm \
     device/motorola/spyder/prebuilt/usr/keylayout/aev_abs.kl:system/usr/keylayout/aev_abs.kl \
     device/motorola/spyder/prebuilt/usr/keylayout/AVRCP.kl:system/usr/keylayout/AVRCP.kl \
     device/motorola/spyder/prebuilt/usr/keylayout/cdma_spyder-keypad.kl:system/usr/keylayout/cdma_spyder-keypad.kl \
@@ -216,7 +216,7 @@ PRODUCT_COPY_FILES += \
     device/motorola/spyder/prebuilt/usr/keylayout/cy8c201xx.kl:system/usr/keylayout/cy8c201xx.kl \
     device/motorola/spyder/prebuilt/usr/keylayout/evfwd.kl:system/usr/keylayout/evfwd.kl \
     device/motorola/spyder/prebuilt/usr/keylayout/omap-keypad.kl:system/usr/keylayout/omap-keypad.kl \
-    device/motorola/spyder/prebuilt/usr/keylayout/TOUCH_IC.kl:system/usr/keylayout/TOUCH_IC.kl \
+    device/motorola/spyder/prebuilt/usr/keylayout/touch_ic.kl:system/usr/keylayout/touch_ic.kl \
     device/motorola/spyder/prebuilt/media/bootanimation.zip:system/media/bootanimation.zip 
 
 # Phone settings

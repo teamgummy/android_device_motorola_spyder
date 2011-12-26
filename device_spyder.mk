@@ -34,8 +34,8 @@ PRODUCT_COPY_FILES += \
 
 # Hardware HALs
 #PRODUCT_PACKAGES += \
-#    lights.targa \
-#    sensors.targa \
+#    lights.spyder \
+#    sensors.spyder \
 #    IMSCServer \
 
 PRODUCT_PACKAGES += \
@@ -143,9 +143,9 @@ PRODUCT_PACKAGES += \
 
 # WirelessTether Lib
 PRODUCT_COPY_FILES += \
-    device/motorola/targa/prebuilt/lib/libwtnativetask.so:system/lib/libwtnativetask.so \
-    device/motorola/targa/prebuilt/app/wifi_tether_v3_1-pre110.apk:system/app/wifi_tether_v3_1-pre110.apk \
-    device/motorola/targa/prebuilt/app/xabber.apk:system/app/xabber.apk
+    device/motorola/spyder/prebuilt/lib/libwtnativetask.so:system/lib/libwtnativetask.so \
+    device/motorola/spyder/prebuilt/app/wifi_tether_v3_1-pre110.apk:system/app/wifi_tether_v3_1-pre110.apk \
+    device/motorola/spyder/prebuilt/app/xabber.apk:system/app/xabber.apk
 
 # Rootfs files
 PRODUCT_COPY_FILES += \
@@ -153,7 +153,7 @@ PRODUCT_COPY_FILES += \
     out/target/product/spyder/root/sbin/adbd:system/etc/rootfs/sbin/adbd \
     device/motorola/spyder/root/default.prop:system/etc/rootfs/default.prop \
     device/motorola/spyder/root/init.rc:system/etc/rootfs/init.rc \
-    device/motorola/spyder/root/init.targa.usb.rc:system/etc/rootfs/init.targa.usb.rc \
+    device/motorola/spyder/root/init.spyder.usb.rc:system/etc/rootfs/init.spyder.usb.rc \
     device/motorola/spyder/root/init.mapphone_cdma.rc:system/etc/rootfs/init.mapphone_cdma.rc \
     device/motorola/spyder/root/usbcheck.sh:system/etc/rootfs/usbcheck.sh \
     device/motorola/spyder/root/ueventd.rc:system/etc/rootfs/ueventd.rc \
@@ -162,7 +162,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     device/motorola/spyder/root/default.prop:root/default.prop \
     device/motorola/spyder/root-hijack/init.rc:root/init.rc \
-    device/motorola/spyder/root/init.targa.usb.rc:system/etc/root/init.targaa.usb.rc \
+    device/motorola/spyder/root/init.spyder.usb.rc:system/etc/root/init.spydera.usb.rc \
     device/motorola/spyder/root-hijack/init.mapphone_cdma.rc:root/init.mapphone_cdma.rc \
     device/motorola/spyder/root/usbcheck.sh:root/usbcheck.sh \
     device/motorola/spyder/root/ueventd.rc:root/ueventd.rc \

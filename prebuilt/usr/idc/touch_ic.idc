@@ -16,12 +16,15 @@
 # Emulator keyboard configuration file #1.
 #
 
-cursor.mode = navigation
+touch.deviceType = touchScreen
+#cursor.mode = navigation
 cursor.orientationAware = 1
+keyboard.layout = touch_ui
+keyboard.characterMap = touch_ui
 
 # Size
-touch.size.calibration = diameter
-touch.size.scale = 10
+touch.size.calibration = area
+touch.size.scale = 28
 touch.size.bias = 0
 touch.size.isSummed = 0
 
@@ -31,9 +34,9 @@ touch.size.isSummed = 0
 # A normal thumb touch typically registers about 200 signal strength
 # units although we don't expect these values to be accurate.
 touch.pressure.calibration = amplitude
-touch.pressure.scale = 0.005
+touch.pressure.scale = 0.0125
 
 # Orientation
-touch.orientation.calibration = none
+touch.orientation.calibration = vector
 
 

@@ -19,8 +19,8 @@
 touch.deviceType = touchScreen
 #cursor.mode = navigation
 cursor.orientationAware = 1
-keyboard.layout = touch_ui
-keyboard.characterMap = touch_ui
+keyboard.layout = touch_ic
+keyboard.characterMap = touch_ic
 
 # Size
 touch.size.calibration = area

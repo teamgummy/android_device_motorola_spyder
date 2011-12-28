@@ -86,12 +86,12 @@ PRODUCT_PACKAGES += \
     uim-sysfs 
 
 # FM Radio
-PRODUCT_PACKAGES += \
-    com.ti.fm.fmradioif.xml \
-    fmradioif \
-    FmRxApp \
-    FmTxApp \
-    FmService 
+#PRODUCT_PACKAGES += \
+#    com.ti.fm.fmradioif.xml \
+#    fmradioif \
+#    FmRxApp \
+#    FmTxApp \
+#    FmService 
 
 # Release utilities
 PRODUCT_PACKAGES += \

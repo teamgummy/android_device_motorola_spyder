@@ -14,9 +14,9 @@ on init
 
 on fs
 
-    mount ext3 /dev/block/mmcblk1p21 /system wait noatime nodiratime barrier=1
-    mount ext3 /dev/block/mmcblk1p25 /data nosuid nodev noatime nodiratime
-    mount ext3 /dev/block/mmcblk1p22 /cache nosuid nodev noatime nodiratime
+    mount ext3 /dev/block/mmcblk1p20 /system wait noatime nodiratime barrier=1
+    mount ext3 /dev/block/mmcblk1p24 /data nosuid nodev noatime nodiratime
+    mount ext3 /dev/block/mmcblk1p21 /cache nosuid nodev noatime nodiratime
 
 on post-fs-data
     exec /system/bin/logwrapper /system/bin/mountosh -d /dev/block/webtop
@@ -28,7 +28,6 @@ on post-fs-data
 # prepare generic keypad name
     exec /init_prep_keypad.sh
 
-    mount ext3 /dev/block/mmcblk1p20 /system ro noatime nodiratime remount
     mount rootfs rootfs / rw remount
 
     mkdir /cdrom 0770 system system

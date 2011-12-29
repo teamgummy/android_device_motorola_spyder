@@ -200,13 +200,15 @@ PRODUCT_COPY_FILES += \
     device/motorola/spyder/prebuilt/etc/wifi/tiwlan_ap.ini:system/etc/wifi/tiwlan_ap.ini \
     device/motorola/spyder/prebuilt/etc/wifi/tiwlan.ini:system/etc/wifi/tiwlan.ini \
     device/motorola/spyder/prebuilt/usr/idc/cpcap-key.idc:system/usr/idc/cpcap-key.idc \
+    device/motorola/spyder/prebuilt/usr/idc/cy8c201xx.idc:system/usr/idc/cy8c201xx.idc \
     device/motorola/spyder/prebuilt/usr/idc/light-prox.idc:system/usr/idc/light-prox.idc \
     device/motorola/spyder/prebuilt/usr/idc/omap-keypad.idc:system/usr/idc/omap-keypad.idc \
-    device/motorola/spyder/prebuilt/usr/idc/touchic.idc:system/usr/idc/touchic.idc \
+    device/motorola/spyder/prebuilt/usr/idc/atmxt-i2c.idc:system/usr/idc/atmxt-i2c.idc \
     device/motorola/spyder/prebuilt/usr/keychars/cpcap-key.kcm:system/usr/keychars/cpcap-key.kcm \
+    device/motorola/spyder/prebuilt/usr/keychars/cy8c201xx.kcm:system/usr/keychars/cy8c201xx.kcm \
     device/motorola/spyder/prebuilt/usr/keychars/light-prox.kcm:system/usr/keychars/light-prox.kcm \
     device/motorola/spyder/prebuilt/usr/keychars/omap-keypad.kcm:system/usr/keychars/omap-keypad.kcm \
-    device/motorola/spyder/prebuilt/usr/keychars/touchic.kcm:system/usr/keychars/touchic.kcm \
+    device/motorola/spyder/prebuilt/usr/keychars/atmxt-i2c.kcm:system/usr/keychars/atmxt-i2c.kcm \
     device/motorola/spyder/prebuilt/usr/keylayout/aev_abs.kl:system/usr/keylayout/aev_abs.kl \
     device/motorola/spyder/prebuilt/usr/keylayout/AVRCP.kl:system/usr/keylayout/AVRCP.kl \
     device/motorola/spyder/prebuilt/usr/keylayout/cdma_spyder-keypad.kl:system/usr/keylayout/cdma_spyder-keypad.kl \
@@ -214,7 +216,7 @@ PRODUCT_COPY_FILES += \
     device/motorola/spyder/prebuilt/usr/keylayout/cy8c201xx.kl:system/usr/keylayout/cy8c201xx.kl \
     device/motorola/spyder/prebuilt/usr/keylayout/evfwd.kl:system/usr/keylayout/evfwd.kl \
     device/motorola/spyder/prebuilt/usr/keylayout/omap-keypad.kl:system/usr/keylayout/omap-keypad.kl \
-    device/motorola/spyder/prebuilt/usr/keylayout/touchic.kl:system/usr/keylayout/touchic.kl \
+    device/motorola/spyder/prebuilt/usr/keylayout/atmxt-i2c.kl:system/usr/keylayout/atmxt-i2c.kl \
     device/motorola/spyder/prebuilt/media/bootanimation.zip:system/media/bootanimation.zip 
 
 # Phone settings

@@ -107,7 +107,8 @@ PRODUCT_PACKAGES += \
     utils_test \
     tiler_ptest \
     overlay_test \
-    omx_tests 
+    omx_tests \
+    evtest \
 #    camera_test \
 #    VideoEncTest 
 

@@ -21,4 +21,4 @@
 # function: add_lunch_combo generic-eng
 
 add_lunch_combo full_spyder-userdebug
-add_lunch_combo cm_spyder-userdebug
+add_lunch_combo cyanogen_spyder-userdebug

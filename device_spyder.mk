@@ -46,8 +46,6 @@ PRODUCT_COPY_FILES += \
     frameworks/base/data/etc/android.hardware.wifi.xml:system/etc/permissions/android.hardware.wifi.xml \
     frameworks/base/data/etc/android.software.sip.voip.xml:system/etc/permissions/android.software.sip.voip.xml
 
-# Prebuilts
-#    device/motorola/targa/prebuilt/app/Usb.apk:system/app/Usb.apk \
 
 PRODUCT_COPY_FILES += \
     device/motorola/spyder/prebuilt/bin/hijack:system/bin/hijack \
@@ -257,10 +255,6 @@ PRODUCT_PACKAGES += \
     camera_test \
     VideoEncTest \
     omx_tests \
-
-PRODUCT_PACKAGES += \
-    Usb \
-
 
 FRAMEWORKS_BASE_SUBDIRS += \
     $(addsuffix /java, omapmmlib)

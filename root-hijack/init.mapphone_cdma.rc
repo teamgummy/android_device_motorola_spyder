@@ -1,30 +1,18 @@
-on init
 
-    exec /sbin/fixboot.sh
 
-    export ANDROID_CACHE /cache
-    export DOWNLOAD_CACHE /cache/download
-    export SD_EXT_DIRECTORY /sd-ext
-    export EXTERNAL_STORAGE /mnt/sdcard-ext
-    export PHONE_STORAGE /mnt/sdcard
 
-on fs
 
-    mount ext3 /dev/block/mmcblk1p20 /system wait noatime nodiratime barrier=1
-    mount ext3 /dev/block/mmcblk1p24 /data nosuid nodev noatime nodiratime
-    mount ext3 /dev/block/mmcblk1p21 /cache nosuid nodev noatime nodiratime
 
-on post-fs-data
-    exec /system/bin/logwrapper /system/bin/mountosh -d /dev/block/webtop
-    exec /osh/etc/init.d/udev start
+on post-fs
 
-# Enable ADB
-    write /dev/usb_device_mode msc_adb
+
+
+
 
     # prepare generic keypad name
     exec /init_prep_keypad.sh
-
-    mount ext3 /dev/block/mmcblk1p20 /system ro noatime nodiratime remount
+    mount yaffs2 /dev/block/mmcblk1p20 /system ro remount
+    mount ext3 /dev/block/mmcblk1p20 ro noatime nodiratime remount
     mount rootfs rootfs / rw remount
 
     mkdir /cdrom 0770 system system
@@ -42,11 +30,11 @@ on post-fs-data
     mkdir /sd-ext 0771 system system
 
     mkdir /mnt/sdcard 0000 system system
-    mkdir /mnt/sdcard-ext 0000 system system
+    mkdir /mnt/emmc 0000 system system
 
     symlink /data/tmp /tmp
     symlink /mnt/sdcard /sdcard
-    symlink /mnt/sdcard-ext /sdcard-ext
+    symlink /mnt/emmc /emmc
 
     mount tmpfs tmpfs /tmp
 
@@ -134,6 +122,7 @@ on post-fs-data
 # Mount mtd partitions
     # mount /pds as r/w
     # We chown/chmod /pds again so because mount is run as root + defaults
+    mount yaffs2 /dev/block/mmcblk1p7 /pds nosuid nodev no-checkpoint
     mount ext3 /dev/block/mmcblk1p7 /pds nosuid nodev noatime nodiratime
     chown system system /pds
     chmod 0775 /pds
@@ -339,32 +328,6 @@ on post-fs-data
 
 # Install kernel modules
     insmod /system/lib/modules/sec.ko
-
-# Load ipv6 netfilter/tables support
-    insmod /system/lib/modules/xt_hashlimit.ko
-    insmod /system/lib/modules/xt_HL.ko
-    insmod /system/lib/modules/ip6_tables.ko
-    insmod /system/lib/modules/ip6table_filter.ko
-    insmod /system/lib/modules/ip6table_mangle.ko
-    insmod /system/lib/modules/ip6table_raw.ko
-    insmod /system/lib/modules/ip6t_ah.ko
-    insmod /system/lib/modules/ip6t_eui64.ko
-    insmod /system/lib/modules/ip6t_frag.ko
-    insmod /system/lib/modules/ip6t_hbh.ko
-    insmod /system/lib/modules/ip6t_ipv6header.ko
-    insmod /system/lib/modules/ip6t_LOG.ko
-    insmod /system/lib/modules/ip6t_mh.ko
-    insmod /system/lib/modules/ip6t_REJECT.ko
-    insmod /system/lib/modules/ip6t_rt.ko
-    insmod /system/lib/modules/nf_conntrack_ipv6.ko
-
-# Load Quota2 support modules
-    insmod /system/lib/modules/ip6_tables.ko
-    insmod /system/lib/modules/xt_TPROXY.ko
-    insmod /system/lib/modules/xt_TRACE.ko
-    insmod /system/lib/modules/xt_NFQUEUE.ko
-    insmod /system/lib/modules/xt_qtaguid.ko
-    insmod /system/lib/modules/xt_quota2.ko
 
 # Install product specific kernel modules
     exec /system/bin/load_modules.sh
@@ -749,31 +712,27 @@ on property:ro.kernel.memsize=1024M
     write /sys/module/lowmemorykiller/parameters/minfree 3072,4608,7200,11776,17408,21000
 
 on property:sys.chargeonly.mode=1
-    class_reset main
-    class_reset late_start
-    class_start charger
-    start console
     start battd
-    start chargeonly
-    stop zygote
-
-on property:persist.service.adb.enable=1
-    start adbd
+    start console
+    write /data/chargeonlymode charging
+    exec /system/bin/charge_only_mode
 
 # Power up to normal
 on property:tcmd.suspend=0
-    class_start core
-    class_start main
-    class_start late_start
-
+    class_start pre-zygote_services
+    class_start zygote_services
+    class_start post-zygote_services
 # Power up to suspend
 on property:tcmd.suspend=1
-    class_start core
-    class_start late_start
-
+    class_start pre-zygote_services
+    class_start post-zygote_services
 # Normal to suspend
 on property:tcmd.suspend=2
-    class_stop main
+    class_stop zygote_services
+
+#start console for userdebug and eng builds
+on property:ro.debuggable=1
+    start console
 
 # Moto safe power down
 on property:sys.reboot=1
@@ -800,70 +759,81 @@ on property:ro.hdcp.support=2
     chmod 0660 /dev/omap-hdcp
 
 # The following services are added by moto
-service qe /xbin/qe /system
-    class core
+# Set property strings for ATVC logging
+# This conditionally sets :
+# ro.sys.atvc_allow_bp_log
+# ro.sys.atvc_allow_gki_log
+# ro.sys.atvc_allow_ap_mot_log
+# ro.sys.atvc_allow_all_core
+# ro.sys.atvc_allow_res_core
+# ro.sys.atvc_allow_res_panic
+# ro.sys.atvc_allow_efem
+# ro.sys.atvc_allow_netmon_usb
+# ro.sys.atvc_allow_netmon_ih
+# ro.sys.atvc_allow_all_adb
+service atvc /system/bin/dbvc_atvc_property_set
+    class pre-zygote_services
+    user system
+    group system
     oneshot
 
+#service watchdogd /system/bin/watchdogd
+
 service telnet /system/bin/telnetd
-    class core
+    class pre-zygote_services
     oneshot
 
 service usbd /system/bin/usbd
-    class core
-
-service chargeonly /system/bin/charge_only_mode
-    group root
-    oneshot
-    disabled
-
+    class pre-zygote_services
 service battd /system/bin/battd
-    class core
-    socket battdsock stream 0666 mot_accy mot_accy
+    class pre-zygote_services
+    socket battdsock stream 0660 mot_accy mot_accy
     user root
     group mot_accy mot_pwric
     oneshot
 
-#service catcommands /system/bin/catcommands
-#    class core
-#    group radio
+service catcommands /system/bin/catcommands
+    class pre-zygote_services
+    group radio
 
 service whisperd /system/bin/whisperd /dev/ttyO1
-    class late_start
+    class post-zygote_services
     user mot_whisper
     group mot_whisper mot_pwric
     oneshot
 
 service msp430 /system/bin/msp430 boot
-    class core
+    class pre-zygote_services
     user compass
     group compass misc input
     oneshot
 
 service uim /system/bin/uim-sysfs
-    class core
+    class pre-zygote_services
     user root
     group media bluetooth
     oneshot
 
-#service hostapd /system/bin/logwrapper /system/bin/Hostapd /data/misc/wifi/hostapd.conf
-#    class late_start
-#    socket hostapd_tiap0 dgram 660 wifi wifi
-#    disabled
-#    oneshot
+service hostapd /system/bin/logwrapper /system/bin/Hostapd /data/misc/wifi/hostapd.conf
+    socket hostapd_tiap0 dgram 660 wifi wifi
+    disabled
+    oneshot
 
 service hciattach /system/bin/hciattach -l
-    class late_start
+    class post-zygote_services
     user bluetooth
     group bluetooth net_bt_admin
     disabled
 
 service nap /system/bin/sdptool add NAP
+    class post-zygote_services
     user bluetooth
     group bluetooth net_bt_admin
     disabled
     oneshot
 
 service del_nap /system/bin/sdptool remove NAP
+    class post-zygote_services
     user bluetooth
     group bluetooth net_bt_admin
     disabled
@@ -876,13 +846,14 @@ service panu /system/bin/sdptool add PANU
     oneshot
 
 service del_panu /system/bin/sdptool remove PANU
+    class post-zygote_services
     user bluetooth
     group bluetooth net_bt_admin
     disabled
     oneshot
 
-service napics /system/bin/sh /system/bin/napics.sh
-    class late_start
+service napics /system/bin/napics.sh
+    class post-zygote_services
     user root
     disabled
     oneshot
@@ -893,21 +864,21 @@ service btdhcpd /system/bin/dnsmasq -C /system/etc/btpan.conf
     oneshot
 
 service map /system/bin/sdptool add --channel=20 --network=2 MAP
-    class late_start
+    class post-zygote_services
     user bluetooth
     group bluetooth net_bt_admin
     disabled
     oneshot
 
 service tcmd /system/bin/tcmd
-    class late_start
+    class post-zygote_services
     group mot_tcmd radio mot_pwric input system log camera graphics mot_accy sdcard_rw audio inet bluetooth wifi compass net_bt_admin mot_tombstone mot_tpapi mount net_raw net_admin mot_whisper media
     socket local_tcmd stream 0660 mot_tcmd mot_tcmd
     socket batch_socket stream 0600 mot_tcmd mot_tcmd
     oneshot
 
 service tcmdhelp /system/bin/tcmdhelp
-    class late_start
+    class post-zygote_services
     socket tcmdhelp stream 0600 mot_tcmd mot_tcmd
     oneshot
     disabled
@@ -931,6 +902,7 @@ on property:tcmd.unload_wlan=1
 on property:tcmd.unload_wlan=2
     exec /system/bin/rmmod tiwlan_drv
     setprop wlan.driver.status unloaded
+
 # turn on bluetooth for tcmd
 on property:tcmd.bt_mod=1
     insmod /system/lib/modules/wl127x_test.ko
@@ -948,67 +920,46 @@ service akmd2 /system/bin/akmd2
     group compass misc input
 
 service wlan_loader /system/bin/wlan_loader -f /system/etc/wifi/fw_wlan1281.bin -i /system/etc/wifi/tiwlan.ini -e /pds/wifi/nvs_map.bin
-    class late_start
+    class post-zygote_services
     disabled
     oneshot
 
 service ap_fmloader /system/bin/logwrapper /system/bin/tiap_loader -f /system/etc/wifi/fw_wlan1281_AP.bin -i /system/etc/wifi/tiwlan_ap.ini -e /pds/wifi/nvs_map.bin
-    class late_start
+    class post-zygote_services
     disabled
     oneshot
 
 service wlan_loader_rfmd /system/bin/wlan_loader -f /system/etc/wifi/fw_wlan1271_rfmd.bin -i /system/etc/wifi/tiwlan_rfmd.ini -e /pds/wifi/nvs_map.bin
-    class late_start
+    class post-zygote_services
     disabled
     oneshot
 
 service ap_fmloader_rfmd /system/bin/logwrapper /system/bin/tiap_loader -f /system/etc/wifi/fw_tiwlan_ap_rfmd.bin -i /system/etc/wifi/tiwlan_ap_rfmd.ini -e /pds/wifi/nvs_map.bin
-    class late_start
+    class post-zygote_services
     disabled
     oneshot
 
 service wpa_supplicant /system/bin/wpa_supplicant -Dtiwlan0 -itiwlan0 -c/data/misc/wifi/wpa_supplicant.conf
-    class late_start
+    class post-zygote_services
+# we will start as root and wpa_supplicant will switch to user wifi
+# after setting up the capabilities required for WEXT
+# user wifi
+# group wifi inet keystore
     socket wpa_tiwlan0 dgram 660 wifi wifi
     disabled
     oneshot
-
-service dhcpcd_tiwlan0 /system/bin/dhcpcd -ABKL
-    class main
+service dhcpcd_tiwlan0 /system/bin/dhcpcd
+    class post-zygote_services
+    disabled
+    oneshot
+service dhcpcd_bnep0 /system/bin/dhcpcd
     disabled
     oneshot
 
-service dhcpcd_p2p /system/bin/dhcpcd -aABKL
-    class main
+service dhcpcd_usbeth0 /system/bin/dhcpcd
+    class post-zygote_services
     disabled
     oneshot
-
-service dhcpcd_bnep0 /system/bin/dhcpcd -ABKL
-    class main
-    disabled
-    oneshot
-
-service iprenew_tiwlan0 /system/bin/dhcpcd -n
-    class main
-    disabled
-    oneshot
-
-service iprenew_p2p /system/bin/dhcpcd -n
-    class main
-    disabled
-    oneshot
-
-service iprenew_bnep0 /system/bin/dhcpcd -n
-    class main
-    disabled
-    oneshot
-
-service bugtogo /system/bin/bugtogo.sh
-    class late_start
-    disabled
-    user root
-    oneshot
-    keycodes 114 115 # default to VOLUME_DOWN + VOLUME_UP
 
 service baseimage /system/bin/dspexec -v -T /system/lib/dsp/baseimage.dof
     class media_early_init
@@ -1017,9 +968,16 @@ service baseimage /system/bin/dspexec -v -T /system/lib/dsp/baseimage.dof
     oneshot
 
 service pvrsrv /system/bin/pvrsrvinit
-    class core
+    class post-zygote_services
     user root
     oneshot
+
+service bugtogo /system/bin/bugtogo.sh
+    class post-zygote_services
+    disabled
+    user root
+    oneshot
+    keycodes 114 115 # default to VOLUME_DOWN + VOLUME_UP
 
 service pppd-ril /system/bin/pppd-ril /dev/ttyUSB0 call pppd-ril.options plugin /system/lib/libpppd_plugin-ril.so
     class late_start
@@ -1028,132 +986,104 @@ service pppd-ril /system/bin/pppd-ril /dev/ttyUSB0 call pppd-ril.options plugin 
     oneshot
 
 service smc /system/bin/startup_smc.sh
-    class core
+    class pre-zygote_services
     user mot_tpapi
     group mot_tpapi
     disabled
     oneshot
 
-service modemlog /system/bin/modemlog
-    class core
+service pm_init /system/bin/sh /system/usr/bin/pm_init.sh
+    class post-zygote_services
     oneshot
 
+service modemlog /system/bin/modemlog
+   oneshot
+
+service fmradio /system/bin/fmradioserver
+    class post-zygote_services
+    user system
+    group bluetooth net_bt_admin net_raw net_admin misc
+    disabled
+
 service ftmipcd /system/bin/ftmipcd
-    class late_start
+    class post-zygote_services
     user radio
     group radio inet
     oneshot
 
 service qbplogd /system/bin/qbplogd
-    class late_start
+    class post-zygote_services
     user radio
     group sdcard_rw radio inet
     oneshot
     disabled
 
-#service dlnasrv /system/bin/dlnasrv
-#    class late_start
-#    user mot_dlna
-#    group system net_admin sdcard_rw new_raw inet mount misc
-#    oneshot
-#    disabled
+service dlnasrv /system/bin/dlnasrv
+    class post-zygote_services
+    user mot_dlna
+    group system net_admin sdcard_rw new_raw inet mount misc
+    oneshot
+    disabled
 
 service dund_dialup /system/bin/dund --listen --channel=6 --nodetach --dialup
-    class late_start
+    class post-zygote_services
     group net_bt net_bt_admin
     disabled
     oneshot
 
 on property:dev.bootcomplete=1
     start savebpver
-
-# From Usb.apk code
-#    public static final int USB_MODE_NGP = 0;
-#    public static final int USB_MODE_MTP = 1;
-#    public static final int USB_MODE_MSC = 2;
-#    public static final int USB_MODE_RNDIS = 3;
-#    public static final int USB_MODE_MODEM = 4;
-#    public static final int USB_MODE_NONE = 5;
-
-on property:sys.usb.config=adb
-    exec /system/bin/am broadcast \
-        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
-        --ei USB_MODE_INDEX 5
-    start adbd
-    setprop sys.usb.state $sys.usb.config
-
-on property:sys.usb.config=mass_storage,adb
-    exec /system/bin/am broadcast \
-        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
-        --ei USB_MODE_INDEX 2
-    start adbd
-    setprop sys.usb.state $sys.usb.config
-
-on property:sys.usb.config=mass_storage
-    exec /system/bin/am broadcast \
-        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
-        --ei USB_MODE_INDEX 2
-    setprop sys.usb.state $sys.usb.config
-
-on property:sys.usb.config=rndis
-    exec /system/bin/am broadcast \
-        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
-        --ei USB_MODE_INDEX 3
-    setprop sys.usb.state $sys.usb.config
-
-on property:sys.usb.config=rndis,adb
-    exec /system/bin/am broadcast \
-        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
-        --ei USB_MODE_INDEX 3
-    start adbd
-    setprop sys.usb.state $sys.usb.config
-
-on property:sys.usb.config=mtp
-    exec /system/bin/am broadcast \
-        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
-        --ei USB_MODE_INDEX 1
-    setprop sys.usb.state $sys.usb.config
-
-on property:sys.usb.config=mtp,adb
-    exec /system/bin/am broadcast \
-        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
-        --ei USB_MODE_INDEX 1
-    start adbd
-    setprop sys.usb.state $sys.usb.config
+    start loadpreinstalls
 
 service mdm_panicd /system/bin/mdm_panicd
-    class late_start
+    class post-zygote_services
     oneshot
 
 #get BP version and save to misc
-#service savebpver /system/bin/SaveBPVer
-#    class late_start
-#    oneshot
+service savebpver /system/bin/SaveBPVer
+    class post-zygote_services
+    oneshot
 
 service secclkd /system/bin/secclkd
-    class late_start
+    class post-zygote_services
     socket secclk_socket stream 660 mot_secclkd mot_secclkd
     user mot_tpapi
     group mot_tpapi mot_sec_rtc mot_secclkd
     oneshot
 
+on property:tcmd.ctrl_adb=1
+    setprop persist.service.adb.enable 1
+    setprop persist.factory.allow_adb 1
+    stop usbd
+    start usbd
+on property:tcmd.ctrl_adb=0
+    setprop persist.service.adb.enable 0
+    setprop persist.factory.allow_adb 0
+    stop usbd
+    start usbd
+
 #start Authentec VPN service
 service vpnclientpm /system/bin/vpnclientpm
-    class late_start
     oneshot
     user root
 
+#service loadpreinstalls /system/bin/logwrapper /system/bin/loadpreinstalls.sh
+#    user system
+#    group system
+#    disabled
+#    oneshot
+
 # start syslink daemon
 service syslinkdaemon /system/bin/syslink_daemon.out -f /system/lib/ducati/Notify_MPUSYS_reroute_Test_Core0.xem3 /system/lib/ducati/base_image_app_m3.xem3
-    class core
+    class pre-zygote_services
     user media
     group video
 
 #IKCBS-229 start RescueStarter for MobileRescue
-#service RescueStarter /system/bin/RescueStarter
-#    user nobody
-#    group input graphics
-#    class late_start
+service RescueStarter /system/bin/RescueStarter
+    user nobody
+    group input graphics
+    class post-zygote_services
 
 service gadget-lte-modem /system/bin/tty2ttyd /dev/ttyACM0 /dev/ttyGS1 0 512
     user radio
@@ -1166,9 +1096,9 @@ service wrigley-diag /system/bin/wrigley-diag.sh
 
 service logcatd-blan /system/bin/logcatd-blan
     user root
-     Immediately drops root, keeps CAP_SYS_ADMIN, and runs as below
-     user system
-     group system log inet
+    # Immediately drops root, keeps CAP_SYS_ADMIN, and runs as below
+    # user system
+    # group system log inet
     disabled
 
 service gadget-qbp-modem /system/bin/tty2ttyd /dev/ttyUSB4 /dev/ttyGS2 0 1024

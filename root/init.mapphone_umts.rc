@@ -1,20 +1,8 @@
-on init
-    exec /sbin/fixboot.sh
-
-    export ANDROID_CACHE /cache
-    export DOWNLOAD_CACHE /cache/download
-    export SD_EXT_DIRECTORY /sd-ext
-    export EXTERNAL_STORAGE /mnt/sdcard-ext
-    export PHONE_STORAGE /mnt/sdcard
-
 on fs
-    mount ext3 /dev/block/mmcblk1p22 /system wait noatime nodiratime barrier=1
-    mount ext3 /dev/block/mmcblk1p24 /data nosuid nodev noatime nodiratime
-    mount ext3 /dev/block/mmcblk1p21 /cache nosuid nodev noatime nodiratime
 
 on post-fs
-    mount yaffs2 mtd@preinstall ro noatime nodiratime remount
-    mount ext3 mmc@system ro noatime nodiratime remount
+    mount yaffs2 /dev/block/system /system ro remount
+    mount ext3 /dev/block/system ro noatime nodiratime remount
 
 # Backward compatibility
     symlink /dev /dev/netmux

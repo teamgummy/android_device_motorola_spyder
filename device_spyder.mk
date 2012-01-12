@@ -48,9 +48,6 @@ PRODUCT_COPY_FILES += \
 
 
 PRODUCT_COPY_FILES += \
-    device/motorola/spyder/prebuilt/bin/hijack:system/bin/hijack \
-    device/motorola/spyder/prebuilt/bin/hijack.log_dump:system/bin/hijack.log_dump \
-    device/motorola/spyder/prebuilt/etc/hijack-boot.zip:system/etc/hijack-boot.zip \
     device/motorola/spyder/prebuilt/bin/mount_ext3.sh:system/bin/mount_ext3.sh \
     device/motorola/spyder/prebuilt/bin/strace:system/bin/strace \
     device/motorola/spyder/prebuilt/etc/TICameraCameraProperties.xml:system/etc/TICameraCameraProperties.xml \
@@ -133,13 +130,7 @@ PRODUCT_PACKAGES += \
     libVendor_ti_omx_config_parser \
     libstagefrighthw \
     libLCML \
-    libOMX.TI.Video.Decoder \
-    libOMX.TI.Video.encoder \
 
-# OMX Binaries
-PRODUCT_PACKAGES += \
-    OMXPolicyManager \
-    OMXResourceManager \
 
 # Syslink and Tiler
 PRODUCT_PACKAGES += \
@@ -255,6 +246,14 @@ PRODUCT_PACKAGES += \
     camera_test \
     VideoEncTest \
     omx_tests \
+
+# Misc Packages
+#    safestrapmenu \
+#    2nd-init \
+
+PRODUCT_PACKAGES += \
+    Usb \
+
 
 FRAMEWORKS_BASE_SUBDIRS += \
     $(addsuffix /java, omapmmlib)

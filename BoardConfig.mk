@@ -123,11 +123,9 @@ endif
 
 
 # Media / Radio
-BUILD_FM_RADIO := true
-BUILD_TI_FM_APPS := true
-FM_CHR_DEV_ST := true
-#PV_PLAYER := 
-#BOARD_HW_PLAYER :=
+#BUILD_FM_RADIO := true
+#BUILD_TI_FM_APPS := true
+#FM_CHR_DEV_ST := true
 
 
 # OTA Packaging

@@ -285,7 +285,7 @@ PRODUCT_COPY_FILES += \
 $(call inherit-product-if-exists, vendor/motorola/spyder/spyder-vendor.mk)
 
 # stuff common to all Motorola phones -- disabled for Sandbox
-#$(call inherit-product, device/motorola/common/common_hijack.mk)
+$(call inherit-product, device/motorola/common/common_hijack.mk)
 
 
 $(call inherit-product, build/target/product/full_base.mk)

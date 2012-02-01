@@ -1,5 +1,3 @@
-import init.spyder.usb.rc
-
 on init
 
     exec /sbin/fixboot.sh
@@ -8,9 +6,7 @@ on init
     export DOWNLOAD_CACHE /cache/download
     export SD_EXT_DIRECTORY /sd-ext
     export EXTERNAL_STORAGE /mnt/sdcard
-    export PHONE_STORAGE /mnt/emmc
-
-    mkdir /osh 0755 root root
+    export SECONDARY_STORAGE /mnt/sdcard-ext
 
 on fs
 
@@ -22,10 +18,8 @@ on post-fs-data
     exec /system/bin/logwrapper /system/bin/mountosh -d /dev/block/webtop
     exec /osh/etc/init.d/udev start
 
-# Enable ADB
-    write /dev/usb_device_mode msc_adb
 
-# prepare generic keypad name
+    # prepare generic keypad name
     exec /init_prep_keypad.sh
 
     mount ext3 /dev/block/mmcblk1p20 /system ro noatime nodiratime remount
@@ -45,12 +39,12 @@ on post-fs-data
     mkdir /misc 0770 system misc
     mkdir /sd-ext 0771 system system
 
-    mkdir /mnt/emmc 0000 system system
     mkdir /mnt/sdcard 0000 system system
+    mkdir /mnt/sdcard-ext 0000 system system
 
     symlink /data/tmp /tmp
     symlink /mnt/sdcard /sdcard
-    symlink /mnt/emmc /emmc
+    symlink /mnt/sdcard-ext /sdcard-ext
 
     mount tmpfs tmpfs /tmp
 
@@ -119,10 +113,12 @@ on post-fs-data
     chown system system /sys/class/timed_output/lvibrator/enable
     chown system system /sys/class/timed_output/vibrator/enable
     chown system system /sys/class/timed_output/vibrator/sweep
+
 # Change permission of vibrators
     chmod 0660 /sys/class/timed_output/lvibrator/enable
     chmod 0660 /sys/class/timed_output/vibrator/enable
     chmod 0660 /sys/class/timed_output/vibrator/sweep
+
 # Mount Points for External Storage Devices
     mkdir /mnt/usbdisk_1.1 0755 system system
     mkdir /mnt/usbdisk_1.2 0755 system system
@@ -135,6 +131,7 @@ on post-fs-data
 # Change permission of tiler's free_page_max to allow mot_osh access
     chmod 0660 /sys/module/tiler_omap/parameters/free_page_max
     chown mot_osh mot_osh /sys/module/tiler_omap/parameters/free_page_max
+
 # Mount mtd partitions
     # mount /pds as r/w
     # We chown/chmod /pds again so because mount is run as root + defaults
@@ -153,6 +150,7 @@ on post-fs-data
     mkdir /pds/camera/module1 0775 system media
     chown system media /pds/camera/module1
     chmod 0775 /pds/camera/module1
+
 
 # Create basic filesystem structure
 
@@ -189,6 +187,9 @@ on post-fs-data
     mkdir /cache/download 0771 system cache
     mkdir /cache/dalvik-cache 0771 system system
     mkdir /cache/lost+found 0770 root root
+
+# usbd permissions
+    mkdir /data/usbd 0777 system system
 
 # Motorola tcmd/12m stuff
     mkdir /data/local/12m 0771 mot_tcmd shell
@@ -233,7 +234,7 @@ on post-fs-data
     # LTE Radio file
     chown radio radio /sys/class/radio/w3g_lte/command
     chmod 777 /sys/class/radio/w3g_lte/command
-    
+
     # create the lost+found directories, so as to enforce our permissions
     mkdir /pds/lost+found 0770
 
@@ -323,7 +324,6 @@ on post-fs-data
     chmod 0770 /data/emt
     # Temp workaround for HP library cleanup
     symlink /dev/hp3a-omap /dev/hp3A-omap
-
 # Permissions for video
     chmod 0770 /dev/hp3a-omap
     chmod 0770 /dev/hplens-omap
@@ -339,14 +339,32 @@ on post-fs-data
 
 # Install kernel modules
     insmod /system/lib/modules/sec.ko
-# Load Quota2 support modules
+
+# Load ipv6 netfilter/tables support
+#    insmod /system/lib/modules/xt_hashlimit.ko
+#    insmod /system/lib/modules/xt_HL.ko
 #    insmod /system/lib/modules/ip6_tables.ko
+#    insmod /system/lib/modules/ip6table_filter.ko
+#    insmod /system/lib/modules/ip6table_mangle.ko
+#    insmod /system/lib/modules/ip6table_raw.ko
+#    insmod /system/lib/modules/ip6t_ah.ko
+#    insmod /system/lib/modules/ip6t_eui64.ko
+#    insmod /system/lib/modules/ip6t_frag.ko
+#    insmod /system/lib/modules/ip6t_hbh.ko
+#    insmod /system/lib/modules/ip6t_ipv6header.ko
+#    insmod /system/lib/modules/ip6t_LOG.ko
+#    insmod /system/lib/modules/ip6t_mh.ko
+#    insmod /system/lib/modules/ip6t_REJECT.ko
+#    insmod /system/lib/modules/ip6t_rt.ko
+#    insmod /system/lib/modules/nf_conntrack_ipv6.ko
+
+# Load Quota2 support modules
+#    insmod /system/lib/modules/nf_tproxy_core.ko
 #    insmod /system/lib/modules/xt_TPROXY.ko
 #    insmod /system/lib/modules/xt_TRACE.ko
 #    insmod /system/lib/modules/xt_NFQUEUE.ko
 #    insmod /system/lib/modules/xt_qtaguid.ko
-    insmod /system/lib/modules/xt_owner2.ko
-    insmod /system/lib/modules/xt_quota2.ko
+#    insmod /system/lib/modules/xt_quota2.ko
 
 # Install product specific kernel modules
     exec /system/bin/load_modules.sh
@@ -790,7 +808,10 @@ service telnet /system/bin/telnetd
     class core
     oneshot
 
-service usbd /system/bin/usbd
+service usbd /system/bin/usbd -r
+    user root
+    group shell
+    socket usbd 777 root shell
     class core
 
 service chargeonly /system/bin/charge_only_mode
@@ -1048,6 +1069,61 @@ service dund_dialup /system/bin/dund --listen --channel=6 --nodetach --dialup
 
 on property:dev.bootcomplete=1
     start savebpver
+    start drm
+
+# From Usb.apk code
+#    public static final int USB_MODE_NGP = 0;
+#    public static final int USB_MODE_MTP = 1;
+#    public static final int USB_MODE_MSC = 2;
+#    public static final int USB_MODE_RNDIS = 3;
+#    public static final int USB_MODE_MODEM = 4;
+#    public static final int USB_MODE_NONE = 5;
+
+on property:sys.usb.config=adb
+    exec /system/bin/am broadcast \
+        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
+        --ei USB_MODE_INDEX 5
+    start adbd
+    setprop sys.usb.state $sys.usb.config
+
+on property:sys.usb.config=mass_storage,adb
+    exec /system/bin/am broadcast \
+        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
+        --ei USB_MODE_INDEX 2
+    start adbd
+    setprop sys.usb.state $sys.usb.config
+
+on property:sys.usb.config=mass_storage
+    exec /system/bin/am broadcast \
+        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
+        --ei USB_MODE_INDEX 2
+    setprop sys.usb.state $sys.usb.config
+
+on property:sys.usb.config=rndis
+    exec /system/bin/am broadcast \
+        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
+        --ei USB_MODE_INDEX 3
+    setprop sys.usb.state $sys.usb.config
+
+on property:sys.usb.config=rndis,adb
+    exec /system/bin/am broadcast \
+        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
+        --ei USB_MODE_INDEX 3
+    start adbd
+    setprop sys.usb.state $sys.usb.config
+
+on property:sys.usb.config=mtp
+    exec /system/bin/am broadcast \
+        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
+        --ei USB_MODE_INDEX 1
+    setprop sys.usb.state $sys.usb.config
+
+on property:sys.usb.config=mtp,adb
+    exec /system/bin/am broadcast \
+        -a com.motorola.intent.action.USB_MODE_SWITCH_FROM_UI \
+        --ei USB_MODE_INDEX 1
+    start adbd
+    setprop sys.usb.state $sys.usb.config
 
 service mdm_panicd /system/bin/mdm_panicd
     class late_start
@@ -1094,7 +1170,7 @@ service wrigley-diag /system/bin/wrigley-diag.sh
 
 service logcatd-blan /system/bin/logcatd-blan
     user root
-     Immediately drops root, keeps CAP_SYS_ADMIN, and runs as below
+#     Immediately drops root, keeps CAP_SYS_ADMIN, and runs as below
      user system
      group system log inet
     disabled
@@ -1160,15 +1236,6 @@ service pbap  /system/bin/sdptool add --channel=19 PBAP
     group bluetooth net_bt_admin
     disabled
     oneshot
-
-#service flash_recovery /system/etc/install-recovery.sh
-#    class main
-#    oneshot
-
-# Copy 12M/batch files
-#service 12m_files_copy /system/etc/12m_files_copy.sh
-#     class core
-#     oneshot
 
 service dnsmasq /system/bin/logwrapper /system/bin/dnsmasq -C/data/misc/wifi/dns.conf -k
     class late_start

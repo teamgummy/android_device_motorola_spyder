@@ -36,11 +36,19 @@ PRODUCT_COPY_FILES += \
 #PRODUCT_PACKAGES += \
 #    lights.spyder \
 #    sensors.spyder \
-#    IMSCServer \
 
 PRODUCT_PACKAGES += \
     audio.primary.spyder \
     audio_policy.spyder
+
+# BlueZ a2dp Audio HAL module
+PRODUCT_PACKAGES += \
+    audio.a2dp.default
+
+# BlueZ test tools
+PRODUCT_PACKAGES += \
+    hciconfig \
+    hcitool
 
 # Modem
 PRODUCT_PACKAGES += \
@@ -51,19 +59,6 @@ PRODUCT_PACKAGES += \
     rild \
     radiooptions \
     sh 
-
-# Syslink and Tiler
-PRODUCT_PACKAGES += \
-    syslink_daemon.out \
-    syslink_tilertest.out \
-    syslink_trace_daemon.out \
-    libipc \
-    libipcutils \
-    librcm \
-    libsysmgr \
-    libnotify \
-    libd2cmap \
-    libtimemmgr 
 
 # Wifi
 PRODUCT_PACKAGES += \
@@ -140,13 +135,15 @@ PRODUCT_PACKAGES += \
     LiveWallpapers \
     LiveWallpapersPicker \
     VisualizationWallpapers \
-    PhaseBeam 
+    PhaseBeam \
+    MusicFX \
+    libjni_pinyinime 
 
 # WirelessTether Lib
 PRODUCT_COPY_FILES += \
+    device/motorola/spyder/prebuilt/app/wifi_tether_v3_1-beta11.apk:system/app/wifi_tether_v3_1-beta11.apk \
     device/motorola/spyder/prebuilt/lib/libwtnativetask.so:system/lib/libwtnativetask.so \
-    device/motorola/spyder/prebuilt/app/wifi_tether_v3_1-pre110.apk:system/app/wifi_tether_v3_1-pre110.apk \
-    device/motorola/spyder/prebuilt/app/xabber.apk:system/app/xabber.apk
+    device/motorola/spyder/prebuilt/app/CM_Music.apk:system/app/CM_Music.apk
 
 # Rootfs files
 PRODUCT_COPY_FILES += \
@@ -154,7 +151,6 @@ PRODUCT_COPY_FILES += \
     out/target/product/spyder/root/sbin/adbd:system/etc/rootfs/sbin/adbd \
     device/motorola/spyder/root/default.prop:system/etc/rootfs/default.prop \
     device/motorola/spyder/root/init.rc:system/etc/rootfs/init.rc \
-    device/motorola/spyder/root/init.spyder.usb.rc:system/etc/rootfs/init.spyder.usb.rc \
     device/motorola/spyder/root/init.mapphone_cdma.rc:system/etc/rootfs/init.mapphone_cdma.rc \
     device/motorola/spyder/root/init.mapphone_umts.rc:system/etc/rootfs/init.mapphone_umts.rc \
     device/motorola/spyder/root/usbcheck.sh:system/etc/rootfs/usbcheck.sh \
@@ -163,8 +159,7 @@ PRODUCT_COPY_FILES += \
 # Hijack files
 PRODUCT_COPY_FILES += \
     device/motorola/spyder/root/default.prop:root/default.prop \
-    device/motorola/spyder/root-hijack/init.rc:root/init.rc \
-    device/motorola/spyder/root/init.spyder.usb.rc:system/etc/root/init.spyder.usb.rc \
+    device/motorola/spyder/root/init.rc:root/init.rc \
     device/motorola/spyder/root-hijack/init.mapphone_cdma.rc:root/init.mapphone_cdma.rc \
     device/motorola/spyder/root-hijack/init.mapphone_umts.rc:system/etc/root/init.mapphone_umts.rc \
     device/motorola/spyder/root/usbcheck.sh:root/usbcheck.sh \
@@ -186,14 +181,14 @@ PRODUCT_COPY_FILES += \
     frameworks/base/data/etc/android.hardware.touchscreen.multitouch.xml:/system/etc/permissions/android.hardware.touchscreen.multitouch.xml \
     frameworks/base/data/etc/android.hardware.wifi.xml:/system/etc/permissions/android.hardware.wifi.xml \
     frameworks/base/data/etc/handheld_core_hardware.xml:/system/etc/permissions/handheld_core_hardware.xml \
-    frameworks/base/data/etc/android.hardware.usb.host.xml:system/etc/permissions/android.hardware.usb.host.xml \
     frameworks/base/data/etc/android.hardware.usb.accessory.xml:system/etc/permissions/android.hardware.usb.accessory.xml \
 
-#    device/motorola/spyder/prebuilt/bin/hijack:system/bin/hijack \
-#    device/motorola/spyder/prebuilt/bin/hijack.log_dump:system/bin/hijack.log_dump \
+
 # Prebuilts
 PRODUCT_COPY_FILES += \
     device/motorola/spyder/prebuilt/bin/battd:system/bin/battd \
+    device/motorola/spyder/prebuilt/bin/hijack:system/bin/hijack \
+    device/motorola/spyder/prebuilt/bin/hijack.log_dump:system/bin/hijack.log_dump \
     device/motorola/spyder/prebuilt/bin/mount_ext3.sh:system/bin/mount_ext3.sh \
     device/motorola/spyder/prebuilt/bin/strace:system/bin/strace \
     device/motorola/spyder/prebuilt/etc/TICameraCameraProperties.xml:system/etc/TICameraCameraProperties.xml \
@@ -202,6 +197,7 @@ PRODUCT_COPY_FILES += \
     device/motorola/spyder/prebuilt/etc/vold.fstab:system/etc/vold.fstab \
     device/motorola/spyder/prebuilt/etc/wifi/tiwlan_ap.ini:system/etc/wifi/tiwlan_ap.ini \
     device/motorola/spyder/prebuilt/etc/wifi/tiwlan.ini:system/etc/wifi/tiwlan.ini \
+    device/motorola/spyder/prebuilt/etc/hijack-boot.zip:system/etc/hijack-boot.zip \
     device/motorola/spyder/prebuilt/usr/idc/cpcap-key.idc:system/usr/idc/cpcap-key.idc \
     device/motorola/spyder/prebuilt/usr/idc/cy8c201xx.idc:system/usr/idc/cy8c201xx.idc \
     device/motorola/spyder/prebuilt/usr/idc/light-prox.idc:system/usr/idc/light-prox.idc \
@@ -244,6 +240,9 @@ PRODUCT_COPY_FILES += \
     device/motorola/spyder/prebuilt/imgtec/libusc.so:system/lib/libusc.so \
     device/motorola/spyder/prebuilt/imgtec/libdrm.so:system/lib/libdrm.so \
 
+FRAMEWORKS_BASE_SUBDIRS += \
+    $(addsuffix /java, omapmmlib)
+
 # we have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise
 
@@ -268,6 +267,7 @@ PRODUCT_COPY_FILES += \
 
 # stuff specific to ti OMAP4 hardware
 $(call inherit-product, hardware/ti/omap4xxx/omap4.mk)
+#$(call inherit-product, hardware/ti/camera/camera.mk)
 $(call inherit-product, hardware/ti/wpan/ti-wpan-products.mk)
 $(call inherit-product-if-exists, vendor/google/google-vendor.mk)
 $(call inherit-product-if-exists, vendor/verizon/verizon-vendor.mk)

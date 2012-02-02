@@ -35,7 +35,7 @@ if [ ! -f "$OTAPACKAGE" ]; then
 	exit 1
 fi
 
-OPTICHARGER=$ANDROID_BUILD_TOP/device/motorola/targa/releasetools/opticharger
+OPTICHARGER=$ANDROID_BUILD_TOP/device/motorola/spyder/releasetools/opticharger
 QUIET=-q
 DELETE_BINS="applypatch applypatch_static check_prereq recovery updater"
 
@@ -59,6 +59,12 @@ $OPTICHARGER framework-res.apk
 cd $REPACK/ota/system/app
 find ./ -name \*.apk | $XARGS $OPTICHARGER
 )
+
+# Remove unwanted Apps
+rm $REPACK/ota/system/app/FmRxApp.apk
+rm $REPACK/ota/system/app/FmService.apk
+rm $REPACK/ota/system/app/FmTxApp.apk
+rm $REPACK/ota/system/app/Music.apk
 
 
 if [ "$WANT_SQUASHFS" -eq 1 ]; then
@@ -124,7 +130,7 @@ printf "Zipping package..."
 echo
 printf "Signing package..."
 SECURITYDIR=$ANDROID_BUILD_TOP/build/target/product/security
-java -Xmx768m \
+java -Xmx2048m \
 	-jar $ANDROID_BUILD_TOP/out/host/$OUT_TARGET_HOST/framework/signapk.jar \
 	-w $SECURITYDIR/testkey.x509.pem $SECURITYDIR/testkey.pk8 \
 	$REPACK/update.zip $OUTFILE
@@ -144,7 +150,10 @@ cat $img.md5sum
 echo
 )
 
-if [ -f ~/upload.sh ] && echo "Running upload script" || exit; then
+#if you want to run a custom upload script put it in ~/upload.sh
+if [ -f ~/razr.sh ];
+then
+	echo "Running upload script"
 	upload=~/razr.sh
 	. $upload
 fi

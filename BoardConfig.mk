@@ -23,7 +23,7 @@ TARGET_ARCH_VARIANT_CPU := cortex-a9
 TARGET_ARCH_VARIANT_FPU := neon
 ARCH_ARM_HAVE_TLS_REGISTER := true
 NEEDS_ARM_ERRATA_754319_754320 := true
-TARGET_GLOBAL_CFLAGS += -DNEEDS_ARM_ERRATA_754319_754320
+TARGET_GLOBAL_CFLAGS += -DNEEDS_ARM_ERRATA_754319_754320 
 
 
 # Kernel
@@ -36,7 +36,7 @@ BOARD_PAGE_SIZE := 0x4096
 # Storage / Sharing
 BOARD_VOLD_MAX_PARTITIONS := 30
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/usb_mass_storage/lun%d/file"
-BOARD_CUSTOM_USB_CONTROLLER := ../../device/motorola/targa/UsbController.cpp
+BOARD_CUSTOM_USB_CONTROLLER := ../../device/motorola/spyder/UsbController.cpp
 
 
 # Connectivity - Wi-Fi
@@ -113,6 +113,7 @@ OMX_VENDOR_WRAPPER := TI_OMX_Wrapper
 BOARD_OPENCORE_LIBRARIES := libOMX_Core
 BOARD_OPENCORE_FLAGS := -DHARDWARE_OMX=1
 endif
+LEGACY_DOMX := true
 
 
 # OMAP
@@ -134,9 +135,7 @@ endif
 
 
 # Media / Radio
-#BUILD_FM_RADIO := true
-#BUILD_TI_FM_APPS := true
-#FM_CHR_DEV_ST := true
+# Off currently
 
 # OTA Packaging
 TARGET_PROVIDES_RELEASETOOLS := true
@@ -145,7 +144,7 @@ TARGET_RELEASETOOL_IMG_FROM_TARGET_SCRIPT := device/motorola/spyder/releasetools
 TARGET_CUSTOM_RELEASETOOL := ./device/motorola/spyder/releasetools/squisher
 
 # Hijack
-TARGET_NEEDS_MOTOROLA_HIJACK := true
+#TARGET_NEEDS_MOTOROLA_HIJACK := true
 #BOARD_HIJACK_LOG_ENABLE := true
 
 

@@ -7,6 +7,7 @@
 /dev/urandom              0666   root       root
 /dev/ashmem               0666   root       root
 /dev/binder               0666   root       root
+/dev/socket/usbd          0755   root       shell
 
 # logger should be world writable (for logging) but not readable
 /dev/log/*                0662   root       log
@@ -72,6 +73,13 @@
 /dev/bus/usb/*            0660   root       usb
 /dev/mtp_usb              0660   root       mtp
 /dev/usb_accessory        0660   root       usb
+/dev/cpcap                0600   radio	    radio
+/dev/ttyUSB0		  0640	 radio      radio
+/dev/ttyUSB1		  0640   radio      radio
+/dev/ttyUSB2		  0640	 radio      radio
+/dev/ttyUSB3		  0640	 radio      radio
+/dev/ttyUSB4		  0640	 radio	    radio
+/dev/ttyUSB5		  0640	 radio	    radio
 
 # touchpad related stuff
 /dev/touchpad             0770   root       mot_tcmd

@@ -8,11 +8,15 @@ ro.sf.lcd_density=240
 ro.default_usb_mode=2
 ro.mot.ril.danlist=611,*611,#611
 persist.ril.ecclist=911,*911,#911
+
+# Enable ALWAYS_READ_IMSI_FROM_SIM
+persist.ril.features=800
 persist.ril.modem.mode =1
+
 # This defines the max event window manager can
 # handle in 1 s. We may adjust this # for performance
 # reason later
-windowsmgr.max_events_per_sec=100
+windowsmgr.max_events_per_sec=250
 
 # USB modes allowed for UI and switching
 ro.ngp_available=1
@@ -48,7 +52,7 @@ softap.interface = tiap0
 # Time between scans in seconds. Keep it high to minimize battery drain.
 # This only affects the case in which there are remembered access points,
 # but none are in range.
-wifi.supplicant_scan_interval = 45
+wifi.supplicant_scan_interval = 90
 
 # Indicate carrier OTA SP number schema
 # refer to frameworks/base/telephony/java/com/android/
@@ -64,7 +68,7 @@ persist.radio.cdma.min = 0
 ro.opengles.version = 131072
 
 # This is a high density device with more memory, so larger vm heaps for it.
-dalvik.vm.heapsize=64m
+dalvik.vm.heapsize=76m
 
 # our HTML browser (not WAP browser ) does not need to specify UAProf URL
 ro.mot.hw.uaprof=http://uaprof.vtext.com/mot/xt912/xt912.xml
@@ -215,6 +219,9 @@ com.motorola.cg.tnHeight=160
 com.motorola.cg.tndisplay=1
 # END IKSTABLE6-13462
 
+# set default usb mode as usb mass storage
+ro.default_usb_mode=2
+
 #
 # ADDITIONAL_BUILD_PROPERTIES
 #
@@ -312,7 +319,9 @@ ro.url.legal.android_privacy=http://www.google.com/intl/%s/mobile/android/basic/
 ro.build.version.full=ICS_Version.4.0.3_r1.XT912.Verizon.en.US
 ro.mot.hidden_keyboards=evfwd
 persist.sys.usb.config=mass_storage,adb
+ro.ril.disable.power.collaspe=1
+pm.sleep_mode=1
 
 ro.rommanager.developerid=dhacker29
-ro.modversion=IC3RAZR
+ro.modversion=IC3RAZR_AOSP
 

@@ -13,11 +13,21 @@
 # limitations under the License.
 
 #
-# Emulator keyboard configuration file #1.
+# Input Device Calibration File for the Spyder touch screen.
 #
 
+# Basic Parameters
 touch.deviceType = touchScreen
 touch.orientationAware = 1
+
+keyboard.layout = atmxt-i2c
+keyboard.characterMap = atmxt-i2c
+keyboard.orientationAware = 1
+keyboard.builtIn = 0
+
+
+cursor.mode = navigation
+cursor.orientationAware = 1
 
 # Size
 touch.size.calibration = diameter
@@ -35,5 +45,4 @@ touch.pressure.scale = 0.005
 
 # Orientation
 touch.orientation.calibration = none
-
 

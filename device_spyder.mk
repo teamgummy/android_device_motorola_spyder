@@ -37,6 +37,9 @@ PRODUCT_COPY_FILES += \
 #    lights.spyder \
 #    sensors.spyder \
 
+#PRODUCT_PACKAGES += \
+#    camera.omap4
+
 PRODUCT_PACKAGES += \
     audio.primary.spyder \
     audio_policy.spyder
@@ -138,7 +141,7 @@ PRODUCT_PACKAGES += \
     MusicFX \
     libjni_pinyinime 
 
-# WirelessTether Lib
+# WirelessTether
 PRODUCT_COPY_FILES += \
     device/motorola/spyder/prebuilt/app/wifi_tether_v3_1-beta11.apk:system/app/wifi_tether_v3_1-beta11.apk \
     device/motorola/spyder/prebuilt/lib/libwtnativetask.so:system/lib/libwtnativetask.so \
@@ -159,7 +162,7 @@ PRODUCT_COPY_FILES += \
     device/motorola/spyder/root/default.prop:root/default.prop \
     device/motorola/spyder/root/init.rc:root/init.rc \
     device/motorola/spyder/root-hijack/init.mapphone_cdma.rc:root/init.mapphone_cdma.rc \
-    device/motorola/spyder/root-hijack/init.mapphone_umts.rc:system/etc/root/init.mapphone_umts.rc \
+    device/motorola/spyder/root-hijack/init.mapphone_umts.rc:root/init.mapphone_umts.rc \
     device/motorola/spyder/root/usbcheck.sh:root/usbcheck.sh \
     device/motorola/spyder/root/ueventd.rc:root/ueventd.rc \
 
@@ -237,9 +240,6 @@ PRODUCT_COPY_FILES += \
     device/motorola/spyder/prebuilt/imgtec/libsrv_um.so:system/lib/libsrv_um.so \
     device/motorola/spyder/prebuilt/imgtec/libusc.so:system/lib/libusc.so \
     device/motorola/spyder/prebuilt/imgtec/libdrm.so:system/lib/libdrm.so \
-
-FRAMEWORKS_BASE_SUBDIRS += \
-    $(addsuffix /java, omapmmlib)
 
 # we have enough storage space to hold precise GC data
 PRODUCT_TAGS += dalvik.gc.type-precise

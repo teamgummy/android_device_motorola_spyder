@@ -253,8 +253,8 @@ on post-fs-data
     # Create wmdrm directory
     mkdir /pds/wmdrm 0775 mot_drm mot_drm
 # Permission for USB
-    chown root mot_usb /proc/mtpctl
-    chmod 0660 /proc/mtpctl
+#    chown root mot_usb /proc/mtpctl
+#    chmod 0660 /proc/mtpctl
 # Install kernel modules
     insmod /system/lib/modules/sec.ko
 # Install product specific kernel modules

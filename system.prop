@@ -325,3 +325,7 @@ pm.sleep_mode=1
 ro.rommanager.developerid=dhacker29
 ro.modversion=IC3RAZR_AOSP
 
+#Tweaks
+ro.kernel.android.checkjni=0
+ro.media.enc.jpeg.quality=100
+debug.sf.hw=1

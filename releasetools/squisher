@@ -124,7 +124,7 @@ mv -f $REPACK/ota/system/app/Usb.apk $REPACK/ota/system/app/Usb.apk.bak
 # Determine what to name the new signed package
 REALDATE=`date +%F-%H_%M`
 
-OUTFILE=$OUT/175-ICS-4.0.3_r1-$TARGET_PRODUCT-$REALDATE.zip
+OUTFILE=$OUT/dhacker29-MOD-ICS-4.0.3_r1-$TARGET_PRODUCT-$REALDATE.zip
 
 # Pack it up and sign
 printf "Zipping package..."

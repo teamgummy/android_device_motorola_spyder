@@ -331,7 +331,7 @@ pm.sleep_mode=1
 ro.config.play.bootsound=0
 
 ro.rommanager.developerid=dhacker29
-ro.modversion=AOKP-spyder-build-25
+ro.modversion=AOKP-spyder-build-27
 
 #Tweaks
 ro.kernel.android.checkjni=0

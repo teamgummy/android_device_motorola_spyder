@@ -50,7 +50,4 @@
         <value>120</value>
         <value>40</value>
     </array>
-
-    <!-- This is the battery capacity in mAh -->
-    <item name="battery.capacity">0</item>
 </device>

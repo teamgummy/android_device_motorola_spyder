@@ -407,9 +407,9 @@ def WriteFullOTAPackage(input_zip, output_zip):
   script.ShowProgress(0.2, 10)
 
   script.ShowProgress(0.1, 0)
-  script.Print("Don't forget to install the GApps beforey you reboot.")
+  script.Print("Don't forget to install the Gapps beforey you reboot. Download them at Goo-inside.me")
   script.Print("")
-  script.Print("Finished installing IC3RAZR, Enjoy!")
+  script.Print("Finished installing Gummy, Enjoy!")
   device_specific.FullOTA_InstallEnd()
 
   if OPTIONS.extra_script is not None:
